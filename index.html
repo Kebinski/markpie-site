@@ -23,8 +23,8 @@
       align-items: center;
       justify-content: space-between;
     }
-    .logo { font-size: 24px; font-weight: 700; color: #333; }
-    .logo span { color: #e67e22; }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo img { height: 32px; width: auto; }
     .nav a {
       margin-left: 24px;
       text-decoration: none;
@@ -138,7 +138,7 @@
 <body>
 <header>
   <div class="container">
-    <div class="logo">Mark<span>Pie</span></div>
+    <a href="/" class="logo"><img src="/images/logo.png" alt="MarkPie"></a>
     <div class="nav">
       <a href="/">首页</a>
       <a href="/privacy">隐私政策</a>

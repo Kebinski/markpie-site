@@ -12,8 +12,8 @@
     }
     .container { max-width: 720px; margin: 0 auto; padding: 0 24px; }
     header { padding: 20px 0; border-bottom: 1px solid #eee; background: #fff; text-align: center; }
-    .logo { font-size: 20px; font-weight: 700; color: #333; text-decoration: none; }
-    .logo span { color: #007aff; }
+    .logo { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+    .logo img { height: 28px; width: auto; }
     .content { padding: 48px 0 80px; }
     .content h1 { font-size: 28px; margin-bottom: 8px; color: #1d1d1f; }
     .content .updated { color: #86868b; font-size: 14px; margin-bottom: 32px; }
@@ -26,7 +26,7 @@
   </style>
 </head>
 <body>
-<header><a href="/" class="logo">Mark<span>Pie</span></a></header>
+<header><a href="/" class="logo"><img src="/images/logo.png" alt="MarkPie"></a></header>
 <div class="content">
   <div class="container">
     <h1>隐私政策</h1>
