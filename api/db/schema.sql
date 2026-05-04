@@ -1,10 +1,12 @@
 -- 用户表
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    wechat_openid TEXT UNIQUE NOT NULL,
+    wechat_openid TEXT UNIQUE,
     wechat_unionid TEXT,
+    apple_user_id TEXT UNIQUE,
     nickname TEXT,
     avatar_url TEXT,
+    provider TEXT NOT NULL DEFAULT 'wechat',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     last_login_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

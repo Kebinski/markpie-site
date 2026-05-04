@@ -1,4 +1,4 @@
-const { createUser, createToken, recordLogin } = require('../lib/auth');
+const { findOrCreateWeChatUser, createToken, recordLogin } = require('../lib/auth');
 
 module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
@@ -19,7 +19,6 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // 1. 交换 code 获取 access_token
     const tokenResp = await fetch(
       `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appID}&secret=${appSecret}&code=${code}&grant_type=authorization_code`
     );
@@ -28,24 +27,20 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: tokenData.errmsg });
     }
 
-    // 2. 获取用户信息（昵称、头像）
     const userResp = await fetch(
       `https://api.weixin.qq.com/sns/userinfo?access_token=${tokenData.access_token}&openid=${tokenData.openid}`
     );
     const userData = await userResp.json();
 
-    // 3. 写入数据库
-    const user = await createUser(
+    const user = await findOrCreateWeChatUser(
       tokenData.openid,
       tokenData.unionid || userData.unionid,
       userData.nickname,
       userData.headimgurl
     );
 
-    // 4. 生成登录 token
     const authToken = await createToken(user.id);
 
-    // 5. 记录登录
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await recordLogin(user.id, 'wechat', ip);
 
@@ -53,7 +48,9 @@ module.exports = async (req, res) => {
       token: authToken,
       user: {
         id: user.id,
+        provider: user.provider,
         openid: user.wechat_openid,
+        unionid: user.wechat_unionid,
         nickname: user.nickname,
         avatar_url: user.avatar_url,
         created_at: user.created_at,

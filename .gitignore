@@ -1,2 +1,4 @@
 .vercel
 .git-credentials
+.env*.local
+node_modules
