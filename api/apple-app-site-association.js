@@ -5,7 +5,7 @@ module.exports = (req, res) => {
         apps: [],
         details: [
           {
-            appID: 'H58Z24BP7C.com.markpie.app',
+            appID: 'S7NV8C9UQ2.com.markpie.app',
             paths: ['/wechat/*'],
           },
         ],
