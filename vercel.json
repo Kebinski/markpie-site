@@ -27,6 +27,14 @@
     {
       "source": "/apple-app-site-association",
       "destination": "/api/apple-app-site-association"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms.html"
     }
   ]
 }
