@@ -38,16 +38,41 @@ CREATE TABLE IF NOT EXISTS memberships (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     membership_status TEXT NOT NULL DEFAULT 'free',
-    daily_memory_count INTEGER DEFAULT 0,
-    daily_memory_limit INTEGER DEFAULT 5,
+    daily_memory_count INTEGER,
+    daily_memory_limit INTEGER,
     handbook_count INTEGER DEFAULT 0,
-    handbook_limit INTEGER DEFAULT 3,
+    handbook_limit INTEGER DEFAULT 5,
     ai_remaining_count INTEGER DEFAULT 4,
     ai_limit_count INTEGER DEFAULT 4,
     reset_at TIMESTAMP WITH TIME ZONE,
+    expires_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     UNIQUE(user_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_memberships_user_id ON memberships(user_id);
+
+-- 兑换码表
+CREATE TABLE IF NOT EXISTS redemption_codes (
+    id SERIAL PRIMARY KEY,
+    code TEXT UNIQUE NOT NULL,
+    duration_days INTEGER NOT NULL,
+    max_uses INTEGER NOT NULL DEFAULT 1,
+    use_count INTEGER NOT NULL DEFAULT 0,
+    expires_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_redemption_codes_code ON redemption_codes(code);
+
+-- Apple 订阅记录表
+CREATE TABLE IF NOT EXISTS apple_subscriptions (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    transaction_id TEXT UNIQUE NOT NULL,
+    expires_at TIMESTAMP WITH TIME ZONE,
+    verified_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_apple_subscriptions_user_id ON apple_subscriptions(user_id);
