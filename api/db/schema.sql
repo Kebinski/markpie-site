@@ -32,3 +32,22 @@ CREATE TABLE IF NOT EXISTS login_records (
 CREATE INDEX IF NOT EXISTS idx_auth_tokens_token ON auth_tokens(token);
 CREATE INDEX IF NOT EXISTS idx_login_records_created_at ON login_records(created_at);
 CREATE INDEX IF NOT EXISTS idx_login_records_user_id ON login_records(user_id);
+
+-- 会员表
+CREATE TABLE IF NOT EXISTS memberships (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    membership_status TEXT NOT NULL DEFAULT 'free',
+    daily_memory_count INTEGER DEFAULT 0,
+    daily_memory_limit INTEGER DEFAULT 5,
+    handbook_count INTEGER DEFAULT 0,
+    handbook_limit INTEGER DEFAULT 3,
+    ai_remaining_count INTEGER DEFAULT 4,
+    ai_limit_count INTEGER DEFAULT 4,
+    reset_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_memberships_user_id ON memberships(user_id);
