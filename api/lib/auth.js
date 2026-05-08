@@ -16,9 +16,13 @@ async function findOrCreateWeChatUser(openid, unionid, nickname, avatarUrl) {
       nickname = COALESCE(NULLIF(EXCLUDED.nickname, ''), users.nickname),
       avatar_url = COALESCE(NULLIF(EXCLUDED.avatar_url, ''), users.avatar_url),
       last_login_at = NOW()
-    RETURNING id, wechat_openid, wechat_unionid, apple_user_id, nickname, avatar_url, provider, created_at, last_login_at
+    RETURNING id, display_id, wechat_openid, wechat_unionid, apple_user_id, nickname, avatar_url, provider, created_at, last_login_at
   `;
-  return rows[0];
+  const user = rows[0];
+  if (!user.display_id) {
+    user.display_id = await assignDisplayId(user.id);
+  }
+  return user;
 }
 
 async function findOrCreateAppleUser(appleUserId, nickname) {
@@ -29,9 +33,29 @@ async function findOrCreateAppleUser(appleUserId, nickname) {
     DO UPDATE SET
       nickname = COALESCE(NULLIF(EXCLUDED.nickname, ''), users.nickname),
       last_login_at = NOW()
-    RETURNING id, wechat_openid, wechat_unionid, apple_user_id, nickname, avatar_url, provider, created_at, last_login_at
+    RETURNING id, display_id, wechat_openid, wechat_unionid, apple_user_id, nickname, avatar_url, provider, created_at, last_login_at
   `;
-  return rows[0];
+  const user = rows[0];
+  if (!user.display_id) {
+    user.display_id = await assignDisplayId(user.id);
+  }
+  return user;
+}
+
+function generateDisplayId() {
+  return String(crypto.randomInt(10000000000, 99999999999));
+}
+
+async function assignDisplayId(userId) {
+  let displayId;
+  let exists = true;
+  while (exists) {
+    displayId = generateDisplayId();
+    const { rows } = await sql`SELECT id FROM users WHERE display_id = ${displayId}`;
+    exists = rows.length > 0;
+  }
+  await sql`UPDATE users SET display_id = ${displayId} WHERE id = ${userId}`;
+  return displayId;
 }
 
 async function createToken(userId) {
@@ -46,7 +70,7 @@ async function createToken(userId) {
 
 async function getUserByToken(token) {
   const { rows } = await sql`
-    SELECT u.id, u.wechat_openid, u.wechat_unionid, u.apple_user_id, u.nickname, u.avatar_url, u.provider, u.created_at, u.last_login_at, t.last_used_at AS token_last_used_at
+    SELECT u.id, u.display_id, u.wechat_openid, u.wechat_unionid, u.apple_user_id, u.nickname, u.avatar_url, u.provider, u.created_at, u.last_login_at, t.last_used_at AS token_last_used_at
     FROM auth_tokens t
     JOIN users u ON u.id = t.user_id
     WHERE t.token = ${token}
