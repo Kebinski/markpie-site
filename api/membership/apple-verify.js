@@ -92,6 +92,7 @@ module.exports = async (req, res) => {
       UPDATE memberships SET
         membership_status = 'member',
         handbook_limit = NULL,
+        ai_remaining_count = 30,
         ai_limit_count = 30,
         expires_at = ${subscriptionExpiresDate.toISOString()},
         updated_at = NOW()
