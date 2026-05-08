@@ -25,6 +25,7 @@ module.exports = async (req, res) => {
 
   return res.status(200).json({
     id: user.id,
+    display_id: user.display_id,
     provider: user.provider,
     openid: user.wechat_openid,
     nickname: user.nickname,

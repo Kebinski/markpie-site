@@ -1,6 +1,7 @@
 -- 用户表
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
+    display_id TEXT UNIQUE,
     wechat_openid TEXT UNIQUE,
     wechat_unionid TEXT,
     apple_user_id TEXT UNIQUE,
